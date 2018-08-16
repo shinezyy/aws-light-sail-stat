@@ -1,13 +1,19 @@
 import time
 import sh
 import json
+import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 
-def get_stat(start, end):
-    raw = sh.aws('lightsail',
+def get_stat(start, end, profile, inst_name):
+    raw = sh.aws(
+            '--profile',
+            profile,
+            'lightsail',
             'get-instance-metric-data',
             '--instance-name',
-            'Ubuntu-512MB-Tokyo-1',
+            inst_name,
             '--metric-name',
             'NetworkOut',
             '--period',
@@ -32,9 +38,47 @@ def main():
     week_ago = now - a_day*7
     month_ago = now - a_day*30
 
-    print('The past 24h usage:\t{0:.2f}\tMB'.format(get_stat(yesterday, now)))
-    print('The past week usage:\t{0:.2f}\tMB'.format(get_stat(week_ago, now)))
-    print('The path month usage:\t{0:.2f}\tMB'.format(get_stat(month_ago, now)))
+    profiles = {
+            'sydney': [
+                'Ubuntu-512MB-Sydney-1'
+                ],
+            'seoul': [
+                'Ubuntu-512MB-Seoul-1',
+                ],
+            'tokyo': [
+                'Ubuntu-512MB-Tokyo-1',
+                ],
+            'sgp': [
+                'AWS-Singapore-1',
+                ],
+            }
+
+    today = date.today()
+    d = today - relativedelta(months=1)
+    clear_day = {
+            'Ubuntu-512MB-Sydney-1':
+                datetime.datetime(d.year, d.month, 25, 0, 0, 0),
+            'Ubuntu-512MB-Seoul-1':
+                datetime.datetime(d.year, d.month, 23, 0, 0, 0),
+            'Ubuntu-512MB-Tokyo-1':
+                datetime.datetime(d.year, d.month, 25, 0, 0, 0),
+            'AWS-Singapore-1':
+                datetime.datetime(d.year, d.month, 23, 0, 0, 0),
+            }
+
+    for profile in profiles:
+        for inst in profiles[profile]:
+            print(inst)
+            print(clear_day[inst])
+            '''
+            print('Past 24h usage:\t{0:.2f}\tMB'.format(
+                get_stat(yesterday, now, profile, inst)))
+            print('Past week usage:\t{0:.2f}\tMB'.format(
+                get_stat(week_ago, now, profile, inst)))
+            '''
+            print('Cycle usage:\t{0:.2f}\tMB'.format(
+                get_stat(time.mktime(clear_day[inst].timetuple()),
+                    now, profile, inst)))
 
 
 if __name__ == '__main__':
