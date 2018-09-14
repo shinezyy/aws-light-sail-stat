@@ -39,13 +39,16 @@ def main():
     month_ago = now - a_day*30
 
     profiles = {
+            'tokyo2': [
+                'AWS-Tokyo-2',
+                ],
             'sydney': [
                 'Ubuntu-512MB-Sydney-1'
                 ],
             'seoul': [
                 'Ubuntu-512MB-Seoul-1',
                 ],
-            'tokyo': [
+            'tokyo1': [
                 'Ubuntu-512MB-Tokyo-1',
                 ],
             'sgp': [
@@ -64,6 +67,8 @@ def main():
                 datetime.datetime(d.year, d.month, 25, 0, 0, 0),
             'AWS-Singapore-1':
                 datetime.datetime(d.year, d.month, 23, 0, 0, 0),
+            'AWS-Tokyo-2':
+                datetime.datetime(d.year, d.month, 11, 0, 0, 0),
             }
 
     for profile in profiles:
